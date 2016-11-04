@@ -37,7 +37,10 @@ class ViewController: UIViewController {
     @IBAction func checkin(_ sender: UIButton) {
         print(userName.text!)
         print(password.text!)
-        print(dateText.text!)
+        print(dateText.text!.components(separatedBy: " "))
+        UserDefaults.standard.setValue(userName.text,forKey: "userName")
+        UserDefaults.standard.setValue(password.text,forKey: "password")
+        
     }
     
     override func viewDidLoad() {
@@ -46,6 +49,9 @@ class ViewController: UIViewController {
         dateFormatter.locale =  Locale(identifier: "zh_CN")
         dateFormatter.dateFormat = "yyyy-MM-dd EEEE"
         dateText.text = dateFormatter.string(from: Date())
+        userName.text = UserDefaults.standard.string(forKey: "userName")
+        password.text = UserDefaults.standard.string(forKey: "password")
+        dateText.isUserInteractionEnabled = false
     }
 
     override func didReceiveMemoryWarning() {
