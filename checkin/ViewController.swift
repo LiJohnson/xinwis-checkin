@@ -14,30 +14,25 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var dateText: UITextField!
+    var dateFormatter:DateFormatter!
    
-    @IBAction func datePicker(_ sender: UITextField) {
+    func initDate() {
         let datePickerView:UIDatePicker = UIDatePicker()
-        
         datePickerView.datePickerMode = UIDatePickerMode.date
-        
-        sender.inputView = datePickerView
-        
+        datePickerView.locale = Locale(identifier: "zh_CN")
+        dateText.inputView = datePickerView
         datePickerView.addTarget(self, action: #selector(ViewController.datePickerValueChanged), for: UIControlEvents.valueChanged)
-
     }
     
     func datePickerValueChanged(sender:UIDatePicker) {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale =  Locale(identifier: "zh_CN")
-        dateFormatter.dateFormat = "yyyy-MM-dd EEEE"
         dateText.text = dateFormatter.string(from: sender.date)
-        
     }
     
     @IBAction func checkin(_ sender: UIButton) {
         print(userName.text!)
         print(password.text!)
         print(dateText.text!.components(separatedBy: " "))
+        print(dateFormatter.string(from: (dateText.inputView as! UIDatePicker).date))
         UserDefaults.standard.setValue(userName.text,forKey: "userName")
         UserDefaults.standard.setValue(password.text,forKey: "password")
         
@@ -45,13 +40,16 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let dateFormatter = DateFormatter()
+        initDate()
+        dateFormatter = DateFormatter()
         dateFormatter.locale =  Locale(identifier: "zh_CN")
         dateFormatter.dateFormat = "yyyy-MM-dd EEEE"
-        dateText.text = dateFormatter.string(from: Date())
+        
+        dateText.text = dateFormatter.string(from: (dateText.inputView as! UIDatePicker).date  )
         userName.text = UserDefaults.standard.string(forKey: "userName")
         password.text = UserDefaults.standard.string(forKey: "password")
-        dateText.isUserInteractionEnabled = false
+        
+        
     }
 
     override func didReceiveMemoryWarning() {
