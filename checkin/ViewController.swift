@@ -29,13 +29,14 @@ class ViewController: UIViewController {
     }
     
     @IBAction func checkin(_ sender: UIButton) {
-        print(userName.text!)
-        print(password.text!)
-        print(dateText.text!.components(separatedBy: " "))
-        print(dateFormatter.string(from: (dateText.inputView as! UIDatePicker).date))
+        //print(userName.text!)
+        //print(password.text!)
+        //print(dateText.text!.components(separatedBy: " "))
+        //print(dateFormatter.string(from: (dateText.inputView as! UIDatePicker).date))
         UserDefaults.standard.setValue(userName.text,forKey: "userName")
         UserDefaults.standard.setValue(password.text,forKey: "password")
         
+        testHttp()
     }
     
     override func viewDidLoad() {
@@ -56,7 +57,39 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
+    
+    func testHttp() {
+        
+        var request = URLRequest(url: URL(string: "http://lcs-mac.local/session.php")!)
+        
+        request.httpMethod = "GET"
+        let session = URLSession.shared
+        print("request \(request)")
+        let dataTask:URLSessionDataTask = session.dataTask(with: request as URLRequest){  (data, response, error)-> Void in
+            let httpStatus = response as! HTTPURLResponse
+            print("response : \(httpStatus.statusCode)")
+            guard let data = data, error == nil else {                                                 // check for fundamental networking error
+                print("error=\(error)")
+                return
+            }
+            
+            let responseString = String(data: data, encoding: .utf8)
+            print("responseString  \(responseString)")
+        }
+        
+//        print("task")
+//        print(dataTask)
+        dataTask.resume()
+//        print(dataTask)
+        
+    }
+    
+    
+    func loadConfig(){
+//        let urlpath     = Bundle.main.path(forResource: "config", ofType: "json")
+//        let url         = NSURL.fileURL(withPath: urlpath!)
+//        JSONSerialization.data(withJSONObject: <#T##Any#>, options: <#T##JSONSerialization.WritingOptions#>)
+//        parser.parse()
+    }
 }
 
