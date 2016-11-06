@@ -9,13 +9,13 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
     @IBOutlet weak var userName: UITextField!
     
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var dateText: UITextField!
     var dateFormatter:DateFormatter!
-   
+    
     func initDate() {
         let datePickerView:UIDatePicker = UIDatePicker()
         datePickerView.datePickerMode = UIDatePickerMode.date
@@ -36,6 +36,7 @@ class ViewController: UIViewController {
         UserDefaults.standard.setValue(userName.text,forKey: "userName")
         UserDefaults.standard.setValue(password.text,forKey: "password")
         
+        
         testHttp()
     }
     
@@ -52,17 +53,19 @@ class ViewController: UIViewController {
         
         
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     func testHttp() {
+        let  config = loadConfig()
+        var request = URLRequest(url: URL(string: config["loginUrl"]! as! String)!)
         
-        var request = URLRequest(url: URL(string: "http://lcs-mac.local/session.php")!)
+        request.httpMethod = "POST"
+        request.httpBody = String(format:"UserName=%@&Password=%@&x=39&y=8", "abs","abs" ).data(using: .utf8)
         
-        request.httpMethod = "GET"
         let session = URLSession.shared
         print("request \(request)")
         let dataTask:URLSessionDataTask = session.dataTask(with: request as URLRequest){  (data, response, error)-> Void in
@@ -77,19 +80,18 @@ class ViewController: UIViewController {
             print("responseString  \(responseString)")
         }
         
-//        print("task")
-//        print(dataTask)
+        //        print("task")
+        //        print(dataTask)
         dataTask.resume()
-//        print(dataTask)
+        //        print(dataTask)
         
     }
     
     
-    func loadConfig(){
-//        let urlpath     = Bundle.main.path(forResource: "config", ofType: "json")
-//        let url         = NSURL.fileURL(withPath: urlpath!)
-//        JSONSerialization.data(withJSONObject: <#T##Any#>, options: <#T##JSONSerialization.WritingOptions#>)
-//        parser.parse()
+    func loadConfig() -> NSDictionary{
+        let plistPath = Bundle.main.path(forResource: "config", ofType: "plist")
+        return NSDictionary(contentsOfFile: plistPath!)!
+        
     }
 }
 
