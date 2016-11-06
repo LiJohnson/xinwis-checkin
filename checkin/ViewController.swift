@@ -37,7 +37,7 @@ class ViewController: UIViewController {
         UserDefaults.standard.setValue(password.text,forKey: "password")
         
         
-        testHttp()
+        record()
     }
     
     override func viewDidLoad() {
@@ -59,31 +59,59 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func testHttp() {
+    func login( done: @escaping () -> Swift.Void ) -> URLSessionDataTask {
         let  config = loadConfig()
         var request = URLRequest(url: URL(string: config["loginUrl"]! as! String)!)
         
         request.httpMethod = "POST"
-        request.httpBody = String(format:"UserName=%@&Password=%@&x=39&y=8", "abs","abs" ).data(using: .utf8)
+        request.httpBody = String(format:"UserName=%@&Password=%@&x=39&y=8", userName.text! ,password.text! ).data(using: .utf8)
         
         let session = URLSession.shared
+
         print("request \(request)")
-        let dataTask:URLSessionDataTask = session.dataTask(with: request as URLRequest){  (data, response, error)-> Void in
+
+        let dataTask:URLSessionDataTask = session.dataTask(with: request , completionHandler:{
+            (data, response, error)-> Void in
             let httpStatus = response as! HTTPURLResponse
-            print("response : \(httpStatus.statusCode)")
-            guard let data = data, error == nil else {                                                 // check for fundamental networking error
+            debugPrint("response : \(httpStatus.statusCode)")
+            guard let data = data, error == nil else {                                                 // check for
                 print("error=\(error)")
                 return
             }
-            
-            let responseString = String(data: data, encoding: .utf8)
-            print("responseString  \(responseString)")
-        }
+            done()
+            //let responseString = String(data: data, encoding: .utf8)
+            //print("responseString  \(responseString)")
         
-        //        print("task")
-        //        print(dataTask)
+        })
+        
         dataTask.resume()
-        //        print(dataTask)
+        
+        return dataTask
+    }
+    
+    func record(){
+        login(done: {
+            let  config = self.loadConfig()
+            var request = URLRequest(url: URL(string: config["recordUrl"]! as! String)!)
+            
+            request.httpMethod = "GET"
+                        print("request \(request)")
+            
+            let dataTask:URLSessionDataTask = URLSession.shared.dataTask(with: request , completionHandler:{
+                (data, response, error)-> Void in
+                let httpStatus = response as! HTTPURLResponse
+                debugPrint("response : \(httpStatus.statusCode)")
+                guard let data = data, error == nil else {                                                 // check for
+                    print("error=\(error)")
+                    return
+                }
+                let responseString = String(data: data, encoding: .utf8)
+                print("responseString  \(responseString)")
+                
+            })
+            
+            dataTask.resume()
+        })
         
     }
     
