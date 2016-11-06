@@ -59,62 +59,57 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func login( done: @escaping () -> Swift.Void ) -> URLSessionDataTask {
+    func login( done: @escaping () -> Swift.Void ) {
         let  config = loadConfig()
-        var request = URLRequest(url: URL(string: config["loginUrl"]! as! String)!)
         
-        request.httpMethod = "POST"
-        request.httpBody = String(format:"UserName=%@&Password=%@&x=39&y=8", userName.text! ,password.text! ).data(using: .utf8)
-        
-        let session = URLSession.shared
-
-        print("request \(request)")
-
-        let dataTask:URLSessionDataTask = session.dataTask(with: request , completionHandler:{
-            (data, response, error)-> Void in
-            let httpStatus = response as! HTTPURLResponse
-            debugPrint("response : \(httpStatus.statusCode)")
-            guard let data = data, error == nil else {                                                 // check for
-                print("error=\(error)")
-                return
-            }
-            done()
-            //let responseString = String(data: data, encoding: .utf8)
-            //print("responseString  \(responseString)")
-        
-        })
-        
-        dataTask.resume()
-        
-        return dataTask
+        post(url: config["loginUrl"]! as! String,
+             param: String(format:"UserName=%@&Password=%@&x=39&y=8", userName.text! ,password.text! ),
+             done: { data in
+                done()
+            })
     }
     
     func record(){
-        login(done: {
-            let  config = self.loadConfig()
-            var request = URLRequest(url: URL(string: config["recordUrl"]! as! String)!)
-            
-            request.httpMethod = "GET"
-                        print("request \(request)")
-            
-            let dataTask:URLSessionDataTask = URLSession.shared.dataTask(with: request , completionHandler:{
-                (data, response, error)-> Void in
-                let httpStatus = response as! HTTPURLResponse
-                debugPrint("response : \(httpStatus.statusCode)")
-                guard let data = data, error == nil else {                                                 // check for
-                    print("error=\(error)")
-                    return
-                }
-                let responseString = String(data: data, encoding: .utf8)
-                print("responseString  \(responseString)")
-                
-            })
-            
-            dataTask.resume()
-        })
+        let  config = self.loadConfig()
         
+        login(done: {
+            self.post( url:config["recordUrl"]! as! String , param:"", done:{ data in
+                debugPrint("check data \(data)")
+                do{
+                
+                    let json = try JSONSerialization.jsonObject(with: data!,options:JSONSerialization.ReadingOptions.mutableContainers) as! [String:Any]
+                    let recordList = json["rows"] as! Array<Dictionary<String,String>>
+                debugPrint("recordList \(recordList)")
+                }catch{
+                }
+            })
+        })
+    
     }
     
+    func post( url:String , param:String , done:@escaping (Data?) -> Void ){
+        var request = URLRequest(url: URL(string: url)!)
+    
+        request.httpMethod = "POST"
+        request.httpBody = param.data(using: .utf8)
+        
+        debugPrint("request \(url) : \(param)")
+        
+        URLSession.shared.dataTask(with: request , completionHandler:{
+            (data, response, error)-> Void in
+            let httpStatus = response as! HTTPURLResponse
+            debugPrint("response : \(httpStatus.statusCode)")
+            guard let data = data, error == nil else {
+                debugPrint("error=\(error)")
+                return
+            }
+            let responseString = String(data: data, encoding: .utf8)
+            debugPrint("responseString  \(responseString)")
+            done(data)
+            
+        }).resume();
+        
+    }
     
     func loadConfig() -> NSDictionary{
         let plistPath = Bundle.main.path(forResource: "config", ofType: "plist")
