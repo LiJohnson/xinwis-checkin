@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		036FDA081DCF884500C02E45 /* config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 036FDA071DCF884500C02E45 /* config.plist */; };
+		036FDA0A1DCFC60500C02E45 /* RecordListDataSorce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036FDA091DCFC60500C02E45 /* RecordListDataSorce.swift */; };
 		03BA49DF1DC9EC43005DA8E4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BA49DE1DC9EC43005DA8E4 /* AppDelegate.swift */; };
 		03BA49E11DC9EC43005DA8E4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BA49E01DC9EC43005DA8E4 /* ViewController.swift */; };
 		03BA49E41DC9EC43005DA8E4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03BA49E21DC9EC43005DA8E4 /* Main.storyboard */; };
@@ -36,6 +37,7 @@
 
 /* Begin PBXFileReference section */
 		036FDA071DCF884500C02E45 /* config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = config.plist; sourceTree = "<group>"; };
+		036FDA091DCFC60500C02E45 /* RecordListDataSorce.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordListDataSorce.swift; sourceTree = "<group>"; };
 		03BA49DB1DC9EC43005DA8E4 /* checkin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = checkin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03BA49DE1DC9EC43005DA8E4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		03BA49E01DC9EC43005DA8E4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				03BA49E71DC9EC43005DA8E4 /* LaunchScreen.storyboard */,
 				03BA49EA1DC9EC43005DA8E4 /* Info.plist */,
 				036FDA071DCF884500C02E45 /* config.plist */,
+				036FDA091DCFC60500C02E45 /* RecordListDataSorce.swift */,
 			);
 			path = checkin;
 			sourceTree = "<group>";
@@ -264,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03BA49E11DC9EC43005DA8E4 /* ViewController.swift in Sources */,
+				036FDA0A1DCFC60500C02E45 /* RecordListDataSorce.swift in Sources */,
 				03BA49DF1DC9EC43005DA8E4 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

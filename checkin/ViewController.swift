@@ -9,9 +9,10 @@
 import UIKit
 
 class ViewController: UIViewController {
+
     
+    @IBOutlet weak var recordList: UITableView!
     @IBOutlet weak var userName: UITextField!
-    
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var dateText: UITextField!
     var dateFormatter:DateFormatter!
@@ -29,13 +30,13 @@ class ViewController: UIViewController {
     }
     
     @IBAction func checkin(_ sender: UIButton) {
+        dateText.text = dateFormatter.string(from: (dateText.inputView as! UIDatePicker).date )
         //print(userName.text!)
         //print(password.text!)
         //print(dateText.text!.components(separatedBy: " "))
         //print(dateFormatter.string(from: (dateText.inputView as! UIDatePicker).date))
         UserDefaults.standard.setValue(userName.text,forKey: "userName")
         UserDefaults.standard.setValue(password.text,forKey: "password")
-        
         
         record()
     }
@@ -47,9 +48,14 @@ class ViewController: UIViewController {
         dateFormatter.locale =  Locale(identifier: "zh_CN")
         dateFormatter.dateFormat = "yyyy-MM-dd EEEE"
         
-        dateText.text = dateFormatter.string(from: (dateText.inputView as! UIDatePicker).date  )
+        dateText.text = dateFormatter.string(from: (dateText.inputView as! UIDatePicker).date )
         userName.text = UserDefaults.standard.string(forKey: "userName")
         password.text = UserDefaults.standard.string(forKey: "password")
+        
+        recordList.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+
+        
+        
         
         
     }
@@ -79,7 +85,14 @@ class ViewController: UIViewController {
                 
                     let json = try JSONSerialization.jsonObject(with: data!,options:JSONSerialization.ReadingOptions.mutableContainers) as! [String:Any]
                     let recordList = json["rows"] as! Array<Dictionary<String,String>>
-                debugPrint("recordList \(recordList)")
+                    debugPrint("recordList \(recordList)")
+                    self.recordList.dataSource = RecordListDataList(aList:recordList)
+                    //self.recordList.reloadData()
+                    self.recordList.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
+
+//                    DispatchQueue.main.async{
+//                        self.recordList.reloadData()
+//                    }
                 }catch{
                 }
             })
