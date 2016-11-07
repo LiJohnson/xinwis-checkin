@@ -89,10 +89,6 @@ class ViewController: UIViewController {
                     self.recordList.dataSource = RecordListDataList(aList:recordList)
                     //self.recordList.reloadData()
                     self.recordList.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
-
-//                    DispatchQueue.main.async{
-//                        self.recordList.reloadData()
-//                    }
                 }catch{
                 }
             })
@@ -107,7 +103,6 @@ class ViewController: UIViewController {
         request.httpBody = param.data(using: .utf8)
         
         debugPrint("request \(url) : \(param)")
-        
         URLSession.shared.dataTask(with: request , completionHandler:{
             (data, response, error)-> Void in
             let httpStatus = response as! HTTPURLResponse
