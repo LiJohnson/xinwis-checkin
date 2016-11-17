@@ -43,7 +43,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="69" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5GO-sd-cto">
-                                <rect key="frame" x="0.0" y="261" width="375" height="406"/>
+                                <rect key="frame" x="0.0" y="269" width="375" height="398"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </tableView>
@@ -69,10 +69,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UyM-Dq-hRC">
-                                <rect key="frame" x="71" y="223" width="215" height="30"/>
+                                <rect key="frame" x="71" y="215" width="215" height="46"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                <state key="normal" title="checkin"/>
+                                <state key="normal" title="checkin🙆🏻‍♂️"/>
                                 <connections>
                                     <action selector="checkin:" destination="BYZ-38-t0r" eventType="touchUpInside" id="h6j-Ew-0s6"/>
                                 </connections>
