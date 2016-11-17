@@ -10,19 +10,18 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    
     @IBOutlet weak var recordList: UITableView!
     @IBOutlet weak var userName: UITextField!
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var dateText: UITextField!
     @IBOutlet weak var position: UITextField!
     @IBOutlet weak var switchCheckin: UISwitch!
+    @IBOutlet weak var checkinLable: UILabel!
     
     var dateFormatter:DateFormatter!
     var config:NSDictionary!
     var positionList:Array<String>!
-    
-    @IBOutlet weak var checkinLable: UILabel!
+    var recordListData:Array<Dictionary<String,String>>!
     
     func initDate() {
         let datePickerView:UIDatePicker = UIDatePicker()
@@ -51,7 +50,7 @@ class ViewController: UIViewController {
         UserDefaults.standard.setValue(userName.text,forKey: "userName")
         UserDefaults.standard.setValue(password.text,forKey: "password")
         checkin()
-        record()
+        
     }
     @IBAction func switchCheckinValue(_ sender: UISwitch) {
         print(sender.isOn)
@@ -63,6 +62,9 @@ class ViewController: UIViewController {
         self.positionList = self.config["positionList"] as! Array<String>
         self.initDate()
         self.initPosition()
+        self.recordList.dataSource = self
+        self.recordList.delegate = self
+        self.recordListData = Array()
         self.switchCheckin.isOn = !self.isCheckOut()
         self.dateFormatter = DateFormatter()
         self.dateFormatter.locale =  Locale(identifier: "zh_CN")
@@ -75,6 +77,8 @@ class ViewController: UIViewController {
         
         recordList.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
+        record()
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -83,9 +87,14 @@ class ViewController: UIViewController {
     }
     
     func login( done: @escaping () -> Swift.Void ) {
-        let  config = loadConfig()
-        post(url: config["loginUrl"]! as! String,
-                param: String(format:"UserName=%@&Password=%@&x=39&y=8&gourl=r?wf_num=R_Happ013_B002", userName.text! ,password.text!),
+        self.recordListData.removeAll()
+        self.recordList.reloadData()
+        self.recordList.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
+        
+        post(url: self.config["loginUrl"]! as! String,
+                param: String(format:"UserName=%@&Password=%@&x=39&y=8&gourl=r?wf_num=R_Happ013_B002",
+                              userName.text! ,
+                              password.text!),
                 done: { data in
                 done()
             })
@@ -101,7 +110,7 @@ class ViewController: UIViewController {
         self.login {
             self.post(url: self.config["checkinUrl"]! as! String ,
                       param: postData, done: { data in
-                        print("lclslsl \(data)")
+                        self.record()
             })
         }
     }
@@ -112,9 +121,8 @@ class ViewController: UIViewController {
                 debugPrint("check data \(data)")
                 do{
                     let json = try JSONSerialization.jsonObject(with: data!,options:JSONSerialization.ReadingOptions.mutableContainers) as! [String:Any]
-                    let recordList = json["rows"] as! Array<Dictionary<String,String>>
-                    debugPrint("recordList \(recordList)")
-                    self.recordList.dataSource = RecordListDataList(aList:recordList)
+                    self.recordListData = json["rows"] as! Array<Dictionary<String,String>>
+                    debugPrint("recordList \(self.recordListData)")
                     self.recordList.reloadData()
                     self.recordList.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
                 }catch{
@@ -129,7 +137,6 @@ class ViewController: UIViewController {
     
         request.httpMethod = "POST"
         request.httpBody = param.data(using: .utf8)
-        
         debugPrint("request \(url) : \(param)")
         URLSession.shared.dataTask(with: request , completionHandler:{
             (data, response, error)-> Void in
@@ -153,8 +160,6 @@ class ViewController: UIViewController {
         }else{
             return self.switchCheckin.isOn ? "1" :"2"
         }
-        
-        
     }
     
     func loadConfig() -> NSDictionary{
@@ -197,4 +202,29 @@ extension ViewController: UIPickerViewDataSource {
     }
 }
 
+extension ViewController: UITableViewDelegate{
+}
+
+extension ViewController: UITableViewDataSource {
+
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        return self.recordListData.count
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        
+        let cell:UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "recordCell")
+            ?? UITableViewCell(style: .subtitle, reuseIdentifier: "recordCell")
+
+        let data:Dictionary<String,String> = self.recordListData[indexPath.row]
+
+        debugPrint( data )
+
+        cell.textLabel?.text = "\(data["AttDate"]!) \(data["ActTime"]!) , \(data["AttType"]!)-\(data["AttStatus"]!)"
+        
+        cell.detailTextLabel?.text = data["AttPosition"]
+
+        return cell
+    }
+}
 
