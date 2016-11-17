@@ -25,17 +25,36 @@ class ViewController: UIViewController {
     
     func initDate() {
         let datePickerView:UIDatePicker = UIDatePicker()
-    
         datePickerView.datePickerMode = UIDatePickerMode.date
         datePickerView.locale = Locale(identifier: "zh_CN")
-        self.dateText.inputView = datePickerView
         datePickerView.addTarget(self, action: #selector(ViewController.datePickerValueChanged), for: UIControlEvents.valueChanged)
+        
+        
+        let toolBar = UIToolbar()
+        toolBar.sizeToFit()
+        
+        toolBar.setItems([
+            UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil),
+            UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.done, target: self, action: #selector(ViewController.closePicker))
+            ], animated: false)
+        
+        self.dateText.inputView = datePickerView
+        self.dateText.inputAccessoryView = toolBar
     }
     
     func initPosition() {
         let positionPicker = UIPickerView()
         positionPicker.dataSource = self
         positionPicker.delegate = self
+        
+        let toolBar = UIToolbar()
+        toolBar.sizeToFit()
+        toolBar.setItems([
+            UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil),
+            UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.done, target: self, action: #selector(ViewController.closePicker))
+            ], animated: false)
+        
+        self.position.inputAccessoryView = toolBar
         self.position.inputView = positionPicker
         self.position.text = self.positionList[Int(arc4random_uniform(UInt32(self.positionList.count)))]
         
@@ -43,6 +62,19 @@ class ViewController: UIViewController {
     
     func datePickerValueChanged(sender:UIDatePicker) {
         dateText.text = dateFormatter.string(from: sender.date)
+    }
+    
+    func closePicker(sender:UIView)  {
+        debugPrint(sender)
+        if self.position.isEditing {
+            debugPrint("endEditing position")
+            self.position.endEditing(false)
+        }
+        if self.dateText.isEditing{
+            debugPrint("endEditing dateText")
+            self.dateText.endEditing(false)
+        }
+        
     }
     
     @IBAction func checkin(_ sender: UIButton) {
