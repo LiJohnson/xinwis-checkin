@@ -71,6 +71,7 @@
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UyM-Dq-hRC">
                                 <rect key="frame" x="71" y="223" width="215" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                 <state key="normal" title="checkin"/>
                                 <connections>
                                     <action selector="checkin:" destination="BYZ-38-t0r" eventType="touchUpInside" id="h6j-Ew-0s6"/>
