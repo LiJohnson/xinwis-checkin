@@ -124,7 +124,7 @@ class ViewController: UIViewController {
         self.recordList.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
         
         post(url: self.config["loginUrl"]! as! String,
-                param: String(format:"UserName=%@&Password=%@&x=39&y=8&gourl=r?wf_num=R_Happ013_B002",
+                param: String(format:self.config["loginParam"]! as! String,
                               userName.text! ,
                               password.text!),
                 done: { data in
@@ -134,7 +134,7 @@ class ViewController: UIViewController {
     
     func checkin(){
         let date = dateText.text!.components(separatedBy: " ")
-        let postData:String = String(format:"AttType=%@&AttWeek=%@&AttPosition=%@&AttDate=%@&AttRule=广州打卡&AttLongitude=113.3662&AttLatitude=23.10571&InTime=09:10&OutTime=18:00",
+        let postData:String = String(format:self.config["checkinParam"] as! String,
                                      self.getChecknText(isText: false),
                                      date[1],
                                      self.position.text!,
