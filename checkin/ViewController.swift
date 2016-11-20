@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 class ViewController: UIViewController {
 
@@ -17,18 +18,23 @@ class ViewController: UIViewController {
     @IBOutlet weak var position: UITextField!
     @IBOutlet weak var switchCheckin: UISwitch!
     @IBOutlet weak var checkinLable: UILabel!
+    @IBOutlet weak var distanceText: UILabel!
     
     var dateFormatter:DateFormatter!
     var config:NSDictionary!
     var positionList:Array<String>!
     var recordListData:Array<Dictionary<String,String>>!
+    var locationManager: CLLocationManager!
+    var currentLocation: CLLocation!
+    var checkinLocation: CLLocation!
+    //var geoCodeer: CLGeocoder!
+    var distance: Int!
     
     func initDate() {
         let datePickerView:UIDatePicker = UIDatePicker()
         datePickerView.datePickerMode = UIDatePickerMode.date
         datePickerView.locale = Locale(identifier: "zh_CN")
         datePickerView.addTarget(self, action: #selector(ViewController.datePickerValueChanged), for: UIControlEvents.valueChanged)
-        
         
         let toolBar = UIToolbar()
         toolBar.sizeToFit()
@@ -57,7 +63,6 @@ class ViewController: UIViewController {
         self.position.inputAccessoryView = toolBar
         self.position.inputView = positionPicker
         self.position.text = self.positionList[Int(arc4random_uniform(UInt32(self.positionList.count)))]
-        
    }
     
     func datePickerValueChanged(sender:UIDatePicker) {
@@ -82,8 +87,8 @@ class ViewController: UIViewController {
         UserDefaults.standard.setValue(userName.text,forKey: "userName")
         UserDefaults.standard.setValue(password.text,forKey: "password")
         checkin()
-        
     }
+
     @IBAction func switchCheckinValue(_ sender: UISwitch) {
         print(sender.isOn)
         self.checkinLable.text = self.getChecknText(isText: true)
@@ -94,6 +99,8 @@ class ViewController: UIViewController {
         self.positionList = self.config["positionList"] as! Array<String>
         self.initDate()
         self.initPosition()
+        self.locationManager = CLLocationManager()
+        self.locationManager.delegate = self
         self.recordList.dataSource = self
         self.recordList.delegate = self
         self.recordListData = Array()
@@ -107,8 +114,11 @@ class ViewController: UIViewController {
         self.password.text = UserDefaults.standard.string(forKey: "password")
         self.checkinLable.text = self.getChecknText(isText: true)
         
-        recordList.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
+        self.checkinLocation = CLLocation(
+            latitude:self.config["checkinLatitude"] as! Double ,
+            longitude:self.config["checkinLongitude"] as! Double)
+        self.getLocaltion()
+        self.position.text = "-----"
         record()
         
     }
@@ -125,7 +135,7 @@ class ViewController: UIViewController {
         
         post(url: self.config["loginUrl"]! as! String,
                 param: String(format:self.config["loginParam"]! as! String,
-                              userName.text! ,
+                              userName.text!,
                               password.text!),
                 done: { data in
                 done()
@@ -133,24 +143,42 @@ class ViewController: UIViewController {
     }
     
     func checkin(){
-        let date = dateText.text!.components(separatedBy: " ")
-        let postData:String = String(format:self.config["checkinParam"] as! String,
-                                     self.getChecknText(isText: false),
-                                     date[1],
-                                     self.position.text!,
-                                     date[0]);
+        if !(self.currentLocation != nil) {
+            self.alert(message: "no location")
+            return
+        }        
+        
+        if( (self.config["checkinRange"] as! Int) < Int(self.distanceText.text!)! ){
+            self.alert(message: "too far away")
+            return
+        }
+        self.position.text = "-----"
         self.login {
-            self.post(url: self.config["checkinUrl"]! as! String ,
-                      param: postData, done: { data in
-                        self.record()
-            })
+            self.getAddress { (address) in
+                DispatchQueue.main.async {
+                   self.position.text = address
+                }
+                
+                debugPrint("update position \(address)")
+            
+                let date = self.dateText.text!.components(separatedBy: " ")
+                let postData:String = String(format:self.config["checkinParam"] as! String,
+                                         self.getChecknText(isText: false),
+                                         date[1],
+                                         self.position.text!,
+                                         date[0]);
+            
+                self.post(url: self.config["checkinUrl"]! as! String ,
+                          param: postData, done: { data in
+                            self.record()
+                })
+            }
         }
     }
     
     func record(){
         login(done: {
             self.post( url:self.config["recordUrl"]! as! String , param:"", done:{ data in
-                debugPrint("check data \(data)")
                 do{
                     let json = try JSONSerialization.jsonObject(with: data!,options:JSONSerialization.ReadingOptions.mutableContainers) as! [String:Any]
                     self.recordListData = json["rows"] as! Array<Dictionary<String,String>>
@@ -162,6 +190,21 @@ class ViewController: UIViewController {
             })
         })
     
+    }
+    
+    func getAddress(done: @escaping (String?) -> Void) {
+        let url = String(format: self.config["addressUrl"]! as! String , self.currentLocation.coordinate.latitude,self.currentLocation.coordinate.longitude)
+        self.post(url: url ,param:"",done:{ data in
+            do{
+                let json = try JSONSerialization.jsonObject(with: data!,options:JSONSerialization.ReadingOptions.mutableContainers) as! [String:Any]
+                let result:Dictionary<String,Any> = json["result"] as! Dictionary<String,Any>
+                let address:String = result["formatted_address"] as! String
+                debugPrint("result[formatted_address] \(address)")
+                done(address)
+                
+            }catch{
+            }
+        })
     }
     
     func post( url:String , param:String , done:@escaping (Data?) -> Void ){
@@ -183,8 +226,9 @@ class ViewController: UIViewController {
             done(data)
             
         }).resume();
-        
     }
+    
+    
     
     func getChecknText(isText:Bool) -> String {
         if(isText){
@@ -209,6 +253,12 @@ class ViewController: UIViewController {
         debugPrint("now time is \(hour)")
         
         return hour >= 18
+    }
+    
+    func alert(message:String){
+        let alert = UIAlertController(title: "!!!", message: message , preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
 }
 
@@ -257,6 +307,26 @@ extension ViewController: UITableViewDataSource {
         cell.detailTextLabel?.text = data["AttPosition"]
 
         return cell
+    }
+}
+
+extension ViewController:CLLocationManagerDelegate{
+    
+    func getLocaltion(){
+        if (CLLocationManager.locationServicesEnabled()) {
+            locationManager.requestWhenInUseAuthorization()
+            locationManager.startUpdatingLocation()
+        }}
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]){
+        self.currentLocation = locations.last!
+        
+        self.distanceText.text = String( Int(self.currentLocation.distance(from: self.checkinLocation)) )
+        debugPrint(self.currentLocation.coordinate)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        debugPrint(error)
     }
 }
 

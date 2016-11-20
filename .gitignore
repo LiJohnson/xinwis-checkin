@@ -1,3 +1,5 @@
 checkin.xcodeproj/xcuserdata/lcs.xcuserdatad/xcdebugger/
 checkin/config.plist
 .idea
+*.gpx
+checkin.xcodeproj/project.xcworkspace/xcuserdata/lcs.xcuserdatad/xcdebugger/Expressions.xcexplist

@@ -35,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		032A412C1DE1E42500FB26D4 /* Location.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Location.gpx; sourceTree = "<group>"; };
 		036FDA071DCF884500C02E45 /* config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = config.plist; sourceTree = "<group>"; };
 		03BA49DB1DC9EC43005DA8E4 /* checkin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = checkin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03BA49DE1DC9EC43005DA8E4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -49,6 +50,7 @@
 		03BA49FA1DC9EC43005DA8E4 /* checkinUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = checkinUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03BA49FE1DC9EC43005DA8E4 /* checkinUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = checkinUITests.swift; sourceTree = "<group>"; };
 		03BA4A001DC9EC44005DA8E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		03E34A7B1DE1E6BC00DF05A1 /* PaiZhou2.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PaiZhou2.gpx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,8 @@
 		03BA49D21DC9EC43005DA8E4 = {
 			isa = PBXGroup;
 			children = (
+				032A412C1DE1E42500FB26D4 /* Location.gpx */,
+				03E34A7B1DE1E6BC00DF05A1 /* PaiZhou2.gpx */,
 				03BA49DD1DC9EC43005DA8E4 /* checkin */,
 				03BA49F21DC9EC43005DA8E4 /* checkinTests */,
 				03BA49FD1DC9EC43005DA8E4 /* checkinUITests */,
